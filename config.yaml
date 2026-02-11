@@ -1,0 +1,63 @@
+# GPU Monitor configuration
+# Use SSH keys where possible. If you must use passwords, you can set them via env vars
+# or inline for quick testing. If a device has a password, set only password_env or
+# password (and disable agent/key search).
+# If a device has a key, set only key_path (and disable agent/key search).
+
+refresh_seconds: 15
+busy_memory_pct: 80       # mark GPU busy if memory usage >= this percent
+busy_util_pct: 70         # mark GPU busy if utilization >= this percent
+ssh_timeout_seconds: 8
+
+# Devices to monitor
+# - name: friendly label
+# - host: IP or hostname
+# - user: ssh username
+# - port: ssh port (default 22)
+# - auth:
+#     key_path: /home/user/.ssh/id_rsa
+#     key_paths:
+#       - /home/user/.ssh/id_ed25519
+#       - /home/user/.ssh/id_rsa
+#     password_env: GPU_MON_PASS_3090_01
+#     password: your_password_here
+#     key_passphrase_env: GPU_MON_KEY_PASSPHRASE
+#     key_passphrase: your_key_passphrase_here
+#     allow_agent: false
+#     look_for_keys: false
+#   If auth omitted, SSH agent / default keys will be used.
+
+devices:
+  - name: 3090-01
+    host: 192.168.1.238
+    user: zcai
+    port: 22
+    auth:
+      password: zhichengai
+      allow_agent: false
+      look_for_keys: false
+
+  - name: 3090-02
+    host: 192.168.0.29
+    user: zcai
+    port: 22
+    auth:
+      password: zhichengai
+      allow_agent: false
+      look_for_keys: false
+
+  - name: 4090
+    host: 192.168.1.105
+    user: jiahuan
+    port: 22
+    auth:
+      allow_agent: true
+      look_for_keys: false
+
+  - name: A100
+    host: 192.168.1.254
+    user: jiahuan
+    port: 22
+    auth:
+      allow_agent: true
+      look_for_keys: false

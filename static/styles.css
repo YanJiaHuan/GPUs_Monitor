@@ -1,0 +1,206 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+:root {
+  --bg: #0f141b;
+  --panel: #161d26;
+  --panel-2: #1b2430;
+  --text: #e7edf5;
+  --muted: #97a5b7;
+  --ok: #2ecc71;
+  --busy: #f39c12;
+  --error: #e74c3c;
+  --border: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  background: radial-gradient(circle at 10% 10%, #1f2a3a 0%, #0f141b 45%, #0b0f14 100%);
+  color: var(--text);
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+h1 {
+  margin: 0 0 4px 0;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+}
+
+.legend {
+  display: flex;
+  gap: 12px;
+}
+
+.summary {
+  margin: 28px 0 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.card-title {
+  font-size: 13px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.card-value {
+  font-size: 28px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.table-card {
+  background: var(--panel);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead {
+  background: var(--panel-2);
+}
+
+th,
+td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+tr.row-busy {
+  background: rgba(243, 156, 18, 0.08);
+}
+
+tr.row-ok {
+  background: transparent;
+}
+
+tr.row-error {
+  background: rgba(231, 76, 60, 0.12);
+  color: #ffd9d6;
+}
+
+.pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.pill.ok {
+  background: rgba(46, 204, 113, 0.18);
+  color: var(--ok);
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.pill.busy {
+  background: rgba(243, 156, 18, 0.2);
+  color: var(--busy);
+  border: 1px solid rgba(243, 156, 18, 0.35);
+}
+
+.pill.error {
+  background: rgba(231, 76, 60, 0.2);
+  color: var(--error);
+  border: 1px solid rgba(231, 76, 60, 0.35);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.mono {
+  font-family: "SFMono-Regular", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+button {
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.card-value.ok {
+  color: var(--ok);
+}
+
+.card-value.busy {
+  color: var(--busy);
+}
+
+.card-value.error {
+  color: var(--error);
+}
+
+@media (max-width: 800px) {
+  .app {
+    padding: 20px 16px 32px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th,
+  td {
+    padding: 10px 8px;
+  }
+}

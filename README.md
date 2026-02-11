@@ -2,6 +2,12 @@
 
 Simple Flask + SSH-based GPU status dashboard. It connects to each host over SSH, runs `nvidia-smi`, and presents a live table of GPU usage.
 
+## Visualization
+
+Below is an example view of the dashboard, showing each device, GPU utilization, memory usage, temperature, and UUID in a single table.
+
+![GPU Monitor dashboard screenshot](example.png)
+
 ## Setup
 
 1. Create a virtualenv and install deps:

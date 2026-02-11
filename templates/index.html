@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GPU Monitor</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body data-refresh-seconds="{{ refresh }}">
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <h1>GPU Monitor</h1>
+          <p class="subtitle">Cluster-wide GPU status (auto-refresh every {{ refresh }}s)</p>
+        </div>
+        <div class="legend">
+          <div class="pill ok">Available</div>
+          <div class="pill busy">Busy</div>
+          <div class="pill error">Error</div>
+        </div>
+      </header>
+
+      <section class="summary" id="summary"></section>
+
+      <section class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Device</th>
+              <th>GPU</th>
+              <th>Status</th>
+              <th>Util %</th>
+              <th>Memory</th>
+              <th>Temp</th>
+              <th>UUID</th>
+            </tr>
+          </thead>
+          <tbody id="gpu-table"></tbody>
+        </table>
+      </section>
+
+      <footer class="footer">
+        <div id="updated"></div>
+        <button id="refresh">Refresh Now</button>
+      </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
