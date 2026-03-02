@@ -544,158 +544,118 @@
     </div>
 
     <script>
-      // Mock data - simulates what the real API would return
-      const mockData = {
-        updated_at: Math.floor(Date.now() / 1000),
-        busy_memory_pct: 80,
-        busy_util_pct: 70,
-        devices: [
-          {
-            name: "3090-01",
-            host: "192.168.0.26",
-            status: "ok",
-            error: null,
-            gpus: [
-              {
-                index: 0,
-                name: "NVIDIA GeForce RTX 3090",
-                uuid: "GPU-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-                utilization_gpu: 95,
-                memory_total_mb: 24576,
-                memory_used_mb: 22000,
-                memory_used_pct: 90,
-                temperature_c: 78,
-                busy: true
-              },
-              {
-                index: 1,
-                name: "NVIDIA GeForce RTX 3090",
-                uuid: "GPU-b2c3d4e5-f6a7-8901-bcde-f12345678901",
-                utilization_gpu: 12,
-                memory_total_mb: 24576,
-                memory_used_mb: 2048,
-                memory_used_pct: 8,
-                temperature_c: 42,
-                busy: false
-              }
-            ]
-          },
-          {
-            name: "3090-02",
-            host: "192.168.0.29",
-            status: "ok",
-            error: null,
-            gpus: [
-              {
-                index: 0,
-                name: "NVIDIA GeForce RTX 3090",
-                uuid: "GPU-c3d4e5f6-a7b8-9012-cdef-123456789012",
-                utilization_gpu: 78,
-                memory_total_mb: 24576,
-                memory_used_mb: 20480,
-                memory_used_pct: 83,
-                temperature_c: 72,
-                busy: true
-              },
-              {
-                index: 1,
-                name: "NVIDIA GeForce RTX 3090",
-                uuid: "GPU-d4e5f6a7-b8c9-0123-def1-234567890123",
-                utilization_gpu: 5,
-                memory_total_mb: 24576,
-                memory_used_mb: 1536,
-                memory_used_pct: 6,
-                temperature_c: 38,
-                busy: false
-              }
-            ]
-          },
-          {
-            name: "4090",
-            host: "192.168.1.105",
-            status: "ok",
-            error: null,
-            gpus: [
-              {
-                index: 0,
-                name: "NVIDIA GeForce RTX 4090",
-                uuid: "GPU-e5f6a7b8-c9d0-1234-ef12-345678901234",
-                utilization_gpu: 88,
-                memory_total_mb: 24576,
-                memory_used_mb: 21000,
-                memory_used_pct: 85,
-                temperature_c: 68,
-                busy: true
-              },
-              {
-                index: 1,
-                name: "NVIDIA GeForce RTX 4090",
-                uuid: "GPU-f6a7b8c9-d0e1-2345-f123-456789012345",
-                utilization_gpu: 92,
-                memory_total_mb: 24576,
-                memory_used_mb: 23000,
-                memory_used_pct: 94,
-                temperature_c: 75,
-                busy: true
-              }
-            ]
-          },
-          {
-            name: "A100",
-            host: "192.168.1.254",
-            status: "ok",
-            error: null,
-            gpus: [
-              {
-                index: 0,
-                name: "NVIDIA A100-SXM4-40GB",
-                uuid: "GPU-a7b8c9d0-e1f2-3456-1234-567890123456",
-                utilization_gpu: 15,
-                memory_total_mb: 40960,
-                memory_used_mb: 4096,
-                memory_used_pct: 10,
-                temperature_c: 45,
-                busy: false
-              },
-              {
-                index: 1,
-                name: "NVIDIA A100-SXM4-40GB",
-                uuid: "GPU-b8c9d0e1-f2a3-4567-2345-678901234567",
-                utilization_gpu: 8,
-                memory_total_mb: 40960,
-                memory_used_mb: 2048,
-                memory_used_pct: 5,
-                temperature_c: 41,
-                busy: false
-              }
-            ]
-          }
-        ]
-      };
-
       const summaryEl = document.getElementById("summary");
       const tableEl = document.getElementById("gpu-table");
       const updatedEl = document.getElementById("updated");
       const refreshBtn = document.getElementById("refresh");
 
-      // Simulate data variations on refresh
+      // Device templates with realistic configurations
+      const deviceTemplates = [
+        { name: "3090-01", host: "192.168.0.26", gpuModel: "NVIDIA GeForce RTX 3090", gpuCount: 2, memoryMB: 24576 },
+        { name: "3090-02", host: "192.168.0.29", gpuModel: "NVIDIA GeForce RTX 3090", gpuCount: 2, memoryMB: 24576 },
+        { name: "4090", host: "192.168.1.105", gpuModel: "NVIDIA GeForce RTX 4090", gpuCount: 2, memoryMB: 24576 },
+        { name: "A100", host: "192.168.1.254", gpuModel: "NVIDIA A100-SXM4-40GB", gpuCount: 2, memoryMB: 40960 },
+        { name: "V100", host: "192.168.1.100", gpuModel: "Tesla V100-SXM2-32GB", gpuCount: 4, memoryMB: 32768 },
+        { name: "RTX-6000", host: "192.168.2.50", gpuModel: "Quadro RTX 6000", gpuCount: 2, memoryMB: 24576 }
+      ];
+
+      // Generate random UUID
+      function generateUUID(deviceName, gpuIndex) {
+        const hash = `${deviceName}-${gpuIndex}`.split('').reduce((a, b) => {
+          a = ((a << 5) - a) + b.charCodeAt(0);
+          return a & a;
+        }, 0);
+        const hex = Math.abs(hash).toString(16).padStart(32, '0');
+        return `GPU-${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
+      }
+
+      // Random number in range
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      // Generate realistic GPU state
+      function generateGPUState(memoryTotalMB) {
+        const scenarios = [
+          // Idle
+          { utilization: [0, 15], memoryPct: [5, 20], temp: [35, 50] },
+          // Light load
+          { utilization: [20, 45], memoryPct: [25, 50], temp: [50, 65] },
+          // Medium load
+          { utilization: [50, 75], memoryPct: [55, 75], temp: [65, 75] },
+          // Heavy load (busy)
+          { utilization: [80, 100], memoryPct: [80, 95], temp: [70, 82] },
+          // Training job (busy)
+          { utilization: [95, 100], memoryPct: [90, 98], temp: [75, 85] }
+        ];
+
+        const scenario = scenarios[randomInt(0, scenarios.length - 1)];
+        const utilization = randomInt(scenario.utilization[0], scenario.utilization[1]);
+        const memoryPct = randomInt(scenario.memoryPct[0], scenario.memoryPct[1]);
+        const memoryUsedMB = Math.floor(memoryTotalMB * memoryPct / 100);
+        const temperature = randomInt(scenario.temp[0], scenario.temp[1]);
+
+        return {
+          utilization_gpu: utilization,
+          memory_total_mb: memoryTotalMB,
+          memory_used_mb: memoryUsedMB,
+          memory_used_pct: memoryPct,
+          temperature_c: temperature,
+          busy: memoryPct >= 80 || utilization >= 70
+        };
+      }
+
+      // Generate complete mock data with realistic variations
       function getMockData() {
-        const data = JSON.parse(JSON.stringify(mockData)); // Deep clone
-        data.updated_at = Math.floor(Date.now() / 1000);
+        const data = {
+          updated_at: Math.floor(Date.now() / 1000),
+          busy_memory_pct: 80,
+          busy_util_pct: 70,
+          devices: []
+        };
 
-        // Add some randomness to make it feel more realistic
-        data.devices.forEach(device => {
-          if (device.status === "ok") {
-            device.gpus.forEach(gpu => {
-              // Slightly vary utilization and temperature
-              gpu.utilization_gpu = Math.max(0, Math.min(100, gpu.utilization_gpu + Math.floor(Math.random() * 10 - 5)));
-              gpu.temperature_c = Math.max(30, Math.min(85, gpu.temperature_c + Math.floor(Math.random() * 6 - 3)));
+        // Use 4-6 random devices from templates
+        const numDevices = randomInt(4, 6);
+        const selectedDevices = [...deviceTemplates]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, numDevices);
 
-              // Update busy status based on thresholds
-              gpu.busy = gpu.memory_used_pct >= 80 || gpu.utilization_gpu >= 70;
+        selectedDevices.forEach(template => {
+          // 5% chance of device error
+          const hasError = Math.random() < 0.05;
+
+          if (hasError) {
+            data.devices.push({
+              name: template.name,
+              host: template.host,
+              status: "error",
+              error: ["SSH connection timeout", "nvidia-smi: command not found", "Authentication failed"][randomInt(0, 2)],
+              gpus: []
+            });
+          } else {
+            const gpus = [];
+            for (let i = 0; i < template.gpuCount; i++) {
+              const state = generateGPUState(template.memoryMB);
+              gpus.push({
+                index: i,
+                name: template.gpuModel,
+                uuid: generateUUID(template.name, i),
+                ...state
+              });
+            }
+
+            data.devices.push({
+              name: template.name,
+              host: template.host,
+              status: "ok",
+              error: null,
+              gpus: gpus
             });
           }
         });
+
+        // Sort devices by name for consistency
+        data.devices.sort((a, b) => a.name.localeCompare(b.name));
 
         return data;
       }
