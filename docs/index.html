@@ -210,6 +210,175 @@
         text-transform: uppercase;
       }
 
+      .info-section {
+        margin-top: 48px;
+        padding-top: 48px;
+        border-top: 1px solid var(--border);
+      }
+
+      .info-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 32px;
+        border-radius: 12px;
+        max-width: 100%;
+      }
+
+      .info-card h2 {
+        margin: 0 0 16px 0;
+        font-size: 28px;
+        font-weight: 700;
+      }
+
+      .info-card h3 {
+        margin: 32px 0 16px 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .info-card p {
+        line-height: 1.6;
+        color: var(--muted);
+        margin: 0 0 16px 0;
+      }
+
+      .benefit-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+        margin: 20px 0;
+      }
+
+      .benefit {
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: 10px;
+        transition: transform 0.2s, border-color 0.2s;
+      }
+
+      .benefit:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+
+      .benefit-icon {
+        font-size: 32px;
+        margin-bottom: 12px;
+      }
+
+      .benefit-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+
+      .benefit-desc {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .steps {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin: 20px 0;
+      }
+
+      .step {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: 10px;
+      }
+
+      .step-number {
+        background: linear-gradient(135deg, var(--ok), #27ae60);
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+
+      .step-content {
+        flex: 1;
+      }
+
+      .step-content strong {
+        display: block;
+        font-size: 16px;
+        margin-bottom: 6px;
+        color: var(--text);
+      }
+
+      .step-content p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .step-content code {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: "SFMono-Regular", ui-monospace, monospace;
+        font-size: 13px;
+        color: var(--ok);
+      }
+
+      .features-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+      }
+
+      .features-list li {
+        padding: 12px 0;
+        padding-left: 28px;
+        position: relative;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .features-list li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--ok);
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .features-list li strong {
+        color: var(--text);
+      }
+
+      .github-link {
+        margin-top: 32px;
+        padding: 24px;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .github-link p {
+        margin: 0;
+        line-height: 1.8;
+      }
+
       @media (max-width: 800px) {
         .app {
           padding: 20px 16px 32px;
@@ -222,6 +391,20 @@
         th,
         td {
           padding: 10px 8px;
+        }
+
+        .info-card {
+          padding: 24px 20px;
+        }
+
+        .benefit-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .step {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
         }
       }
     </style>
@@ -266,6 +449,98 @@
         <div id="updated"></div>
         <button id="refresh">Refresh Now</button>
       </footer>
+
+      <section class="info-section">
+        <div class="info-card">
+          <h2>🚀 About GPU Monitor</h2>
+          <p>
+            <strong>GPU Monitor</strong> is a real-time cluster-wide GPU monitoring dashboard that simplifies
+            GPU resource management across multiple machines.
+          </p>
+
+          <h3>💡 Why Use GPU Monitor?</h3>
+          <div class="benefit-grid">
+            <div class="benefit">
+              <div class="benefit-icon">❌</div>
+              <div class="benefit-title">No More Manual SSH</div>
+              <div class="benefit-desc">
+                Stop logging into each machine individually to check GPU availability
+              </div>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">⚡</div>
+              <div class="benefit-title">Instant Overview</div>
+              <div class="benefit-desc">
+                See all your GPUs across your entire cluster in one unified dashboard
+              </div>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">🎯</div>
+              <div class="benefit-title">Smart Status Detection</div>
+              <div class="benefit-desc">
+                Automatically identifies busy/available GPUs based on memory and utilization
+              </div>
+            </div>
+            <div class="benefit">
+              <div class="benefit-icon">🔄</div>
+              <div class="benefit-title">Live Updates</div>
+              <div class="benefit-desc">
+                Auto-refreshes every 15 seconds to keep you informed in real-time
+              </div>
+            </div>
+          </div>
+
+          <h3>🎓 How It Works</h3>
+          <div class="steps">
+            <div class="step">
+              <span class="step-number">1</span>
+              <div class="step-content">
+                <strong>Configure Once</strong>
+                <p>Set up your devices in <code>config.yaml</code> with SSH credentials</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-number">2</span>
+              <div class="step-content">
+                <strong>Run the Server</strong>
+                <p>Start the monitor with <code>python app.py</code></p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-number">3</span>
+              <div class="step-content">
+                <strong>Open Dashboard</strong>
+                <p>Access the web interface from any device on your network</p>
+              </div>
+            </div>
+            <div class="step">
+              <span class="step-number">4</span>
+              <div class="step-content">
+                <strong>Monitor Easily</strong>
+                <p>No more <code>ssh user@host</code> + <code>nvidia-smi</code> for each machine!</p>
+              </div>
+            </div>
+          </div>
+
+          <h3>🛠️ Key Features</h3>
+          <ul class="features-list">
+            <li><strong>Multi-device monitoring</strong> - Track GPUs across unlimited machines</li>
+            <li><strong>Real-time metrics</strong> - Utilization, memory usage, temperature, and more</li>
+            <li><strong>Color-coded status</strong> - Instantly identify available (green) vs busy (orange) GPUs</li>
+            <li><strong>Error detection</strong> - Quickly spot connection or hardware issues</li>
+            <li><strong>Responsive design</strong> - Works on desktop, tablet, and mobile devices</li>
+            <li><strong>Zero dependencies on GPU machines</strong> - Uses SSH to query nvidia-smi remotely</li>
+          </ul>
+
+          <div class="github-link">
+            <p>
+              <strong>💻 Open Source Project</strong><br>
+              This is a demo with mocked data. For the full source code and setup instructions,
+              visit the GitHub repository.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
 
     <script>
