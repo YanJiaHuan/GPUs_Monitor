@@ -29,7 +29,7 @@ ssh_timeout_seconds: 8
 
 devices:
   - name: 3090-01
-    host: 192.168.1.238
+    host: 192.168.0.26
     user: zcai
     port: 22
     auth:

@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GPU Monitor - Demo</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+      :root {
+        --bg: #0f141b;
+        --panel: #161d26;
+        --panel-2: #1b2430;
+        --text: #e7edf5;
+        --muted: #97a5b7;
+        --ok: #2ecc71;
+        --busy: #f39c12;
+        --error: #e74c3c;
+        --border: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        background: radial-gradient(circle at 10% 10%, #1f2a3a 0%, #0f141b 45%, #0b0f14 100%);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      .app {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 24px 48px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+
+      h1 {
+        margin: 0 0 4px 0;
+        font-size: 32px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .legend {
+        display: flex;
+        gap: 12px;
+      }
+
+      .summary {
+        margin: 28px 0 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        padding: 16px;
+        border-radius: 12px;
+      }
+
+      .card-title {
+        font-size: 13px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .card-value {
+        font-size: 28px;
+        font-weight: 700;
+        margin-top: 8px;
+      }
+
+      .table-card {
+        background: var(--panel);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+
+      thead {
+        background: var(--panel-2);
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      tr.row-busy {
+        background: rgba(243, 156, 18, 0.08);
+      }
+
+      tr.row-ok {
+        background: transparent;
+      }
+
+      tr.row-error {
+        background: rgba(231, 76, 60, 0.12);
+        color: #ffd9d6;
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+      }
+
+      .pill.ok {
+        background: rgba(46, 204, 113, 0.18);
+        color: var(--ok);
+        border: 1px solid rgba(46, 204, 113, 0.3);
+      }
+
+      .pill.busy {
+        background: rgba(243, 156, 18, 0.2);
+        color: var(--busy);
+        border: 1px solid rgba(243, 156, 18, 0.35);
+      }
+
+      .pill.error {
+        background: rgba(231, 76, 60, 0.2);
+        color: var(--error);
+        border: 1px solid rgba(231, 76, 60, 0.35);
+      }
+
+      .muted {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 2px;
+      }
+
+      .mono {
+        font-family: "SFMono-Regular", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+          "Courier New", monospace;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 16px;
+      }
+
+      button {
+        border: 1px solid var(--border);
+        background: var(--panel-2);
+        color: var(--text);
+        padding: 8px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      button:hover {
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+
+      .card-value.ok {
+        color: var(--ok);
+      }
+
+      .card-value.busy {
+        color: var(--busy);
+      }
+
+      .card-value.error {
+        color: var(--error);
+      }
+
+      .demo-badge {
+        background: rgba(46, 204, 113, 0.18);
+        color: var(--ok);
+        border: 1px solid rgba(46, 204, 113, 0.3);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 800px) {
+        .app {
+          padding: 20px 16px 32px;
+        }
+
+        table {
+          font-size: 12px;
+        }
+
+        th,
+        td {
+          padding: 10px 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <h1>GPU Monitor</h1>
+          <p class="subtitle">Cluster-wide GPU status (auto-refresh every 15s)</p>
+        </div>
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <div class="demo-badge">Demo Mode</div>
+          <div class="legend">
+            <div class="pill ok">Available</div>
+            <div class="pill busy">Busy</div>
+            <div class="pill error">Error</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="summary" id="summary"></section>
+
+      <section class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Device</th>
+              <th>GPU</th>
+              <th>Status</th>
+              <th>Util %</th>
+              <th>Memory</th>
+              <th>Temp</th>
+              <th>UUID</th>
+            </tr>
+          </thead>
+          <tbody id="gpu-table"></tbody>
+        </table>
+      </section>
+
+      <footer class="footer">
+        <div id="updated"></div>
+        <button id="refresh">Refresh Now</button>
+      </footer>
+    </div>
+
+    <script>
+      // Mock data - simulates what the real API would return
+      const mockData = {
+        updated_at: Math.floor(Date.now() / 1000),
+        busy_memory_pct: 80,
+        busy_util_pct: 70,
+        devices: [
+          {
+            name: "3090-01",
+            host: "192.168.0.26",
+            status: "ok",
+            error: null,
+            gpus: [
+              {
+                index: 0,
+                name: "NVIDIA GeForce RTX 3090",
+                uuid: "GPU-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                utilization_gpu: 95,
+                memory_total_mb: 24576,
+                memory_used_mb: 22000,
+                memory_used_pct: 90,
+                temperature_c: 78,
+                busy: true
+              },
+              {
+                index: 1,
+                name: "NVIDIA GeForce RTX 3090",
+                uuid: "GPU-b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                utilization_gpu: 12,
+                memory_total_mb: 24576,
+                memory_used_mb: 2048,
+                memory_used_pct: 8,
+                temperature_c: 42,
+                busy: false
+              }
+            ]
+          },
+          {
+            name: "3090-02",
+            host: "192.168.0.29",
+            status: "ok",
+            error: null,
+            gpus: [
+              {
+                index: 0,
+                name: "NVIDIA GeForce RTX 3090",
+                uuid: "GPU-c3d4e5f6-a7b8-9012-cdef-123456789012",
+                utilization_gpu: 78,
+                memory_total_mb: 24576,
+                memory_used_mb: 20480,
+                memory_used_pct: 83,
+                temperature_c: 72,
+                busy: true
+              },
+              {
+                index: 1,
+                name: "NVIDIA GeForce RTX 3090",
+                uuid: "GPU-d4e5f6a7-b8c9-0123-def1-234567890123",
+                utilization_gpu: 5,
+                memory_total_mb: 24576,
+                memory_used_mb: 1536,
+                memory_used_pct: 6,
+                temperature_c: 38,
+                busy: false
+              }
+            ]
+          },
+          {
+            name: "4090",
+            host: "192.168.1.105",
+            status: "ok",
+            error: null,
+            gpus: [
+              {
+                index: 0,
+                name: "NVIDIA GeForce RTX 4090",
+                uuid: "GPU-e5f6a7b8-c9d0-1234-ef12-345678901234",
+                utilization_gpu: 88,
+                memory_total_mb: 24576,
+                memory_used_mb: 21000,
+                memory_used_pct: 85,
+                temperature_c: 68,
+                busy: true
+              },
+              {
+                index: 1,
+                name: "NVIDIA GeForce RTX 4090",
+                uuid: "GPU-f6a7b8c9-d0e1-2345-f123-456789012345",
+                utilization_gpu: 92,
+                memory_total_mb: 24576,
+                memory_used_mb: 23000,
+                memory_used_pct: 94,
+                temperature_c: 75,
+                busy: true
+              }
+            ]
+          },
+          {
+            name: "A100",
+            host: "192.168.1.254",
+            status: "ok",
+            error: null,
+            gpus: [
+              {
+                index: 0,
+                name: "NVIDIA A100-SXM4-40GB",
+                uuid: "GPU-a7b8c9d0-e1f2-3456-1234-567890123456",
+                utilization_gpu: 15,
+                memory_total_mb: 40960,
+                memory_used_mb: 4096,
+                memory_used_pct: 10,
+                temperature_c: 45,
+                busy: false
+              },
+              {
+                index: 1,
+                name: "NVIDIA A100-SXM4-40GB",
+                uuid: "GPU-b8c9d0e1-f2a3-4567-2345-678901234567",
+                utilization_gpu: 8,
+                memory_total_mb: 40960,
+                memory_used_mb: 2048,
+                memory_used_pct: 5,
+                temperature_c: 41,
+                busy: false
+              }
+            ]
+          }
+        ]
+      };
+
+      const summaryEl = document.getElementById("summary");
+      const tableEl = document.getElementById("gpu-table");
+      const updatedEl = document.getElementById("updated");
+      const refreshBtn = document.getElementById("refresh");
+
+      // Simulate data variations on refresh
+      function getMockData() {
+        const data = JSON.parse(JSON.stringify(mockData)); // Deep clone
+        data.updated_at = Math.floor(Date.now() / 1000);
+
+        // Add some randomness to make it feel more realistic
+        data.devices.forEach(device => {
+          if (device.status === "ok") {
+            device.gpus.forEach(gpu => {
+              // Slightly vary utilization and temperature
+              gpu.utilization_gpu = Math.max(0, Math.min(100, gpu.utilization_gpu + Math.floor(Math.random() * 10 - 5)));
+              gpu.temperature_c = Math.max(30, Math.min(85, gpu.temperature_c + Math.floor(Math.random() * 6 - 3)));
+
+              // Update busy status based on thresholds
+              gpu.busy = gpu.memory_used_pct >= 80 || gpu.utilization_gpu >= 70;
+            });
+          }
+        });
+
+        return data;
+      }
+
+      function renderSummary(data) {
+        const totals = {
+          devices: data.devices.length,
+          gpus: 0,
+          busy: 0,
+          free: 0,
+          error: 0,
+        };
+
+        data.devices.forEach((d) => {
+          if (d.status !== "ok") {
+            totals.error += 1;
+            return;
+          }
+          d.gpus.forEach((g) => {
+            totals.gpus += 1;
+            if (g.busy) totals.busy += 1;
+            else totals.free += 1;
+          });
+        });
+
+        summaryEl.innerHTML = `
+          <div class="card">
+            <div class="card-title">Devices</div>
+            <div class="card-value">${totals.devices}</div>
+          </div>
+          <div class="card">
+            <div class="card-title">GPUs</div>
+            <div class="card-value">${totals.gpus}</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Busy</div>
+            <div class="card-value busy">${totals.busy}</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Free</div>
+            <div class="card-value ok">${totals.free}</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Errors</div>
+            <div class="card-value error">${totals.error}</div>
+          </div>
+        `;
+      }
+
+      function formatMem(used, total, pct) {
+        return `${used} / ${total} MiB (${pct}%)`;
+      }
+
+      function renderTable(data) {
+        tableEl.innerHTML = "";
+
+        data.devices.forEach((d) => {
+          if (d.status !== "ok") {
+            const row = document.createElement("tr");
+            row.className = "row-error";
+            row.innerHTML = `
+              <td>${d.name}<div class="muted">${d.host}</div></td>
+              <td colspan="6">${d.error || "Unknown error"}</td>
+            `;
+            tableEl.appendChild(row);
+            return;
+          }
+
+          d.gpus.forEach((g) => {
+            const row = document.createElement("tr");
+            row.className = g.busy ? "row-busy" : "row-ok";
+            row.innerHTML = `
+              <td>${d.name}<div class="muted">${d.host}</div></td>
+              <td>#${g.index} ${g.name}</td>
+              <td><span class="pill ${g.busy ? "busy" : "ok"}">${
+              g.busy ? "Busy" : "Available"
+            }</span></td>
+              <td>${g.utilization_gpu}%</td>
+              <td>${formatMem(g.memory_used_mb, g.memory_total_mb, g.memory_used_pct)}</td>
+              <td>${g.temperature_c}°C</td>
+              <td class="mono">${g.uuid}</td>
+            `;
+            tableEl.appendChild(row);
+          });
+        });
+      }
+
+      function renderUpdated(ts) {
+        const date = new Date(ts * 1000);
+        updatedEl.textContent = `Last updated: ${date.toLocaleString()}`;
+      }
+
+      function refresh() {
+        const data = getMockData();
+        renderSummary(data);
+        renderTable(data);
+        renderUpdated(data.updated_at);
+      }
+
+      refreshBtn.addEventListener("click", refresh);
+
+      // Auto-refresh every 15 seconds
+      setInterval(refresh, 15000);
+
+      // Initial render
+      refresh();
+    </script>
+  </body>
+</html>
